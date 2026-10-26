@@ -1,0 +1,11 @@
+replicaCount: 2
+environment: prod
+customMessage: "Hello from Live Production"
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "100m"
+    memory: "128Mi"

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: my-python-app
+description: Multi-Environment Helm Chart for EKS
+type: application
+version: 1.0.0
+appVersion: "v1"
