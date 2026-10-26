@@ -1,6 +1,6 @@
 replicaCount: 1
 environment: dev
-customMessage: "Hello from the Developer Testing Sandbox"
+customMessage: "Hello from GitOps Automated Development Environment"
 
 resources:
   requests:
