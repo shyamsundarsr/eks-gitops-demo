@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: petclinic-rest
+  labels:
+    app: petclinic-rest
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.rest.port }}
+    targetPort: {{ .Values.rest.port }}
+    name: http
+  selector:
+    app: petclinic-rest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic-rest
+spec:
+  replicas: {{ .Values.rest.replicaCount }}
+  selector:
+    matchLabels:
+      app: petclinic-rest
+  template:
+    metadata:
+      labels:
+        app: petclinic-rest
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z -w 2 petclinic-mysql 3306; do echo waiting for mysql...; sleep 2; done;']
+      containers:
+      - name: rest
+        image: "{{ .Values.rest.image.repository }}:{{ .Values.rest.image.tag }}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.rest.port }}
+          name: http
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "mysql,spring-data-jpa"
+        - name: MYSQL_URL
+          value: "jdbc:mysql://petclinic-mysql:3306/{{ .Values.mysql.database }}?useUnicode=true"
+        - name: MYSQL_USER
+          value: {{ .Values.mysql.user | quote }}
+        - name: MYSQL_PASS
+          value: {{ .Values.mysql.password | quote }}
+        readinessProbe:
+          httpGet:
+            path: /petclinic/actuator/health
+            port: {{ .Values.rest.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /petclinic/actuator/health
+            port: {{ .Values.rest.port }}
+          initialDelaySeconds: 60
+          periodSeconds: 15
+        resources:
+          {{- toYaml .Values.rest.resources | nindent 10 }}

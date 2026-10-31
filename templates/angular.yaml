@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: petclinic-angular
+  labels:
+    app: petclinic-angular
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: {{ .Values.angular.port }}
+    name: http
+  selector:
+    app: petclinic-angular
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic-angular
+spec:
+  replicas: {{ .Values.angular.replicaCount }}
+  selector:
+    matchLabels:
+      app: petclinic-angular
+  template:
+    metadata:
+      labels:
+        app: petclinic-angular
+    spec:
+      containers:
+      - name: angular
+        image: "{{ .Values.angular.image.repository }}:{{ .Values.angular.image.tag }}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.angular.port }}
+          name: http
+        resources:
+          {{- toYaml .Values.angular.resources | nindent 10 }}

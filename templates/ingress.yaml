@@ -1,0 +1,27 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: petclinic-ingress
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+  - http:
+      paths:
+      - path: /petclinic/api
+        pathType: Prefix
+        backend:
+          service:
+            name: petclinic-rest
+            port:
+              number: {{ .Values.rest.port }}
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: petclinic-angular
+            port:
+              number: 80
+{{- end }}

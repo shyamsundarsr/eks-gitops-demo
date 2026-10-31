@@ -1,0 +1,55 @@
+global:
+  environment: default
+
+mysql:
+  image: mysql:5.7
+  port: 3306
+  storage: 5Gi
+  storageClassName: gp3
+  database: petclinic
+  user: petclinic
+  password: petclinicpassword
+  rootPassword: rootpassword
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+rest:
+  image:
+    repository: 504483086241.dkr.ecr.us-east-1.amazonaws.com/petclinic-rest
+    tag: v1
+  replicaCount: 1
+  port: 9966
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+
+angular:
+  image:
+    repository: 504483086241.dkr.ecr.us-east-1.amazonaws.com/petclinic-angular
+    tag: v1
+  replicaCount: 1
+  port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'

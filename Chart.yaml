@@ -1,0 +1,6 @@
+apiVersion: v2
+name: petclinic
+description: A 3-tier Spring Boot, Angular, and MySQL application for EKS
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
